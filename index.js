@@ -9,7 +9,6 @@ import cors from "cors";
 const app = express();
 
 app.use(express.json());
-app.use(express.json());
 
 config({ path: "./config/config.env" });
 
@@ -27,8 +26,7 @@ app.use(
 app.use("/api/v1", userRouter);
 app.use("/api/v1", bookRouter);
 
-const PORT = process.env.PORT;
-
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("connected", PORT);
 });
