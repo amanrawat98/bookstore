@@ -52,7 +52,15 @@ export const userSignUp = async (req, res) => {
 
     await newUser.save();
 
-    return res.status(200).json({ message: "Created successfully" });
+    const token = jwt.sign(
+      {
+        data: newUser,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "12h" }
+    );
+
+    return res.status(200).json({ message: "Created successfully" , token});
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
