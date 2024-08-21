@@ -20,12 +20,8 @@ const signupSchema = Joi.object({
     "string.empty": "Password can't be empty.",
     "string.min": "Password must be at least 4 characters long.",
   }),
-  role:Joi.string().required().messages({
-    "any.required": "Role is required.",
-    "string.empty": "Role can't be empty.",
-  }),
-});
 
+});
 
 export const userSignUp = async (req, res) => {
   try {
@@ -38,23 +34,20 @@ export const userSignUp = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { username, email, password,role } = value;
+    const { username, email, password } = value;
 
     const findUser = await User.findOne({ email });
-    console.log(findUser);
 
     if (findUser) {
       return res.status(400).json({ message: "User Already Exists" });
     }
 
     let hashpass = await bcrypt.hash(password, 10);
-    console.log(hashpass, "hashedpass");
 
     const newUser = new User({
       username,
       email,
       password: hashpass,
-      role
     })
 
     await newUser.save();
@@ -83,7 +76,6 @@ export const userLogin = async (req, res) => {
     const { body } = req;
     const result = loginSchema.validate(body, { abortEarly: false });
     const { value, error } = result;
-    console.log(value);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
@@ -105,7 +97,7 @@ export const userLogin = async (req, res) => {
       {
         data: findUser,
       },
-      "12345",
+      process.env.JWT_SECRET_KEY,
       { expiresIn: "12h" }
     );
 

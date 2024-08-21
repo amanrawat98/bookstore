@@ -26,8 +26,6 @@ router.post("/signup", userSignUp);
 
 //login user
 
-
-
 router.post("/login", userLogin);
 
 export default router;

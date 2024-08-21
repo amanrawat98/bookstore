@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { config } from "dotenv";
 import userRouter from "./router/userRouter.js";
 import bookRouter from "./router/bookRouter.js";
+import cors from 'cors';
 
 const app = express();
 
@@ -16,6 +17,9 @@ dotenv.config();
 dbConnection();
 
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cors());
+
 app.use("/api/v1", userRouter);
 app.use("/api/v1", bookRouter);
 
