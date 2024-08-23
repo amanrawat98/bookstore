@@ -13,7 +13,7 @@ export const userAuthorization = (req, res, next) => {
 
     console.log("Decoded Token Data:", data);
 
-    if (data.data.role !== "admin" && data.data.role !== "seller") {
+    if (data.data.role !== "seller") {
       return res
         .status(403)
         .json({ message: "You Dont have Access to this Feature" });

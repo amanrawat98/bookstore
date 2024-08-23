@@ -8,9 +8,9 @@ import {
 const router = express.Router();
 import { userAuthorization } from "../auth/userauth.js";
 
-router.post("/createbook", userAuthorization, createBook);
-router.get("/allbooks", getBook);
-router.delete("/deleteBook", userAuthorization, deleteBook);
-router.put("/updatebook/:bookid", userAuthorization, updateBook);
+router.post("/", userAuthorization, createBook);
+router.get("/", getBook);
+router.delete("/", userAuthorization, deleteBook);
+router.put("/:bookid", userAuthorization, updateBook);
 
 export default router;

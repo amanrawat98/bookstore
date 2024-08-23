@@ -20,6 +20,10 @@ const createBookSchema = Joi.object({
     "any.required": "Password is required.",
     "number.integer": "Must be a Integer.",
   }),
+  published: Joi.date().required().messages({
+    "any.required": "Date is required.",
+    "date.base": "The date provided must be a valid date.",
+  }),
 });
 
 // Create Book
@@ -34,7 +38,7 @@ export const createBook = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { title, author, publisher, stock } = value;
+    const { title, author, publisher, stock, published } = value;
     const findBook = await Book.findOne({ title });
     console.log(findBook);
 
@@ -47,6 +51,7 @@ export const createBook = async (req, res) => {
       author,
       publisher,
       stock,
+      published,
     });
 
     await newBook.save();
@@ -70,8 +75,8 @@ export const getBook = async (req, res) => {
 };
 
 const deleteBookSchema = Joi.object({
-  bookId: Joi.string().required().messages({
-    "any.required": "author is required.",
+  bookid: Joi.string().required().messages({
+    "any.required": "BookId is required.",
     "string.empty": "BookId can't be empty.",
   }),
 });
@@ -83,15 +88,15 @@ export const deleteBook = async (req, res) => {
     const { body } = req;
     const result = deleteBookSchema.validate(body, { abortEarly: false });
     const { value, error } = result;
-    console.log("value", value);
+
+
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { bookId } = value;
-    console.log("book", bookId);
+    const { bookid } = value;
 
-    const product = await Book.findByIdAndDelete(bookId);
+    const product = await Book.findByIdAndDelete(bookid);
     console.log("product", product);
     return res.status(200).json({ message: "Book Deleted Successfully" });
   } catch (error) {
@@ -110,12 +115,13 @@ export const updateBook = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { title, author, publisher, stock } = value;
+    const { title, author, publisher, stock, date } = value;
     const updatedbookvalue = {
       title: title,
       author: author,
       publisher: publisher,
       stock: stock,
+      date:date
     };
     const bookUpdated = await Book.findByIdAndUpdate(bookid, updatedbookvalue, {
       new: true,

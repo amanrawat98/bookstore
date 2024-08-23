@@ -1,8 +1,7 @@
 import { User } from "../models/user.js";
-import bcrypt from "bcrypt";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
-
+import bcrypt from "bcryptjs";
 // Sign Up
 const signupSchema = Joi.object({
   username: Joi.string().min(4).required().messages({
@@ -20,7 +19,6 @@ const signupSchema = Joi.object({
     "string.empty": "Password can't be empty.",
     "string.min": "Password must be at least 4 characters long.",
   }),
-
 });
 
 export const userSignUp = async (req, res) => {
@@ -36,9 +34,9 @@ export const userSignUp = async (req, res) => {
 
     const { username, email, password } = value;
 
-    const findUser = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-    if (findUser) {
+    if (user) {
       return res.status(400).json({ message: "User Already Exists" });
     }
 
@@ -48,19 +46,26 @@ export const userSignUp = async (req, res) => {
       username,
       email,
       password: hashpass,
-    })
+    });
 
     await newUser.save();
 
+    const createduser = newUser.toObject();
+    delete createduser.password;
+
+    console.log("createduser", createduser);
+
     const token = jwt.sign(
       {
-        data: newUser,
+        data: createduser,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "12h" }
     );
 
-    return res.status(200).json({ message: "Created successfully" , token});
+    return res
+      .status(200)
+      .json({ message: "Created successfully", token, createduser });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ message: "Internal Server Error" });
@@ -90,8 +95,8 @@ export const userLogin = async (req, res) => {
 
     const { email, password } = value;
 
-    const findUser = await User.findOne({ email });
-    if (!findUser) {
+    const user = await User.findOne({ email }).select("-password");
+    if (!user) {
       return res.status(400).json({ message: "Credentials not correct" });
     }
 
@@ -101,15 +106,22 @@ export const userLogin = async (req, res) => {
       return res.status(400).json({ message: "Credentials not correct" });
     }
 
+    const createduser = user.toObject();
+    delete createduser.password;
+
+    console.log("createduser", createduser);
+
     const token = jwt.sign(
       {
-        data: findUser,
+        data: createduser,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "12h" }
     );
 
-    return res.status(200).json({ message: "Login in SuccessFully", token });
+    return res
+      .status(200)
+      .json({ message: "Login in SuccessFully", token, createduser });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }

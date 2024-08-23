@@ -23,8 +23,8 @@ app.use(
   })
 );
 
-app.use("/api/v1", userRouter);
-app.use("/api/v1", bookRouter);
+app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/books", bookRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
