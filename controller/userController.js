@@ -100,7 +100,7 @@ export const userLogin = async (req, res) => {
       return res.status(400).json({ message: "Credentials not correct" });
     }
 
-    let decryptpass = await bcrypt.compare(password, findUser.password);
+    let decryptpass = await bcrypt.compare(password, user.password);
 
     if (!decryptpass) {
       return res.status(400).json({ message: "Credentials not correct" });
