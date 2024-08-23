@@ -95,7 +95,7 @@ export const userLogin = async (req, res) => {
 
     const { email, password } = value;
 
-    const user = await User.findOne({ email }).select("-password");
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Credentials not correct" });
     }
