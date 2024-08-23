@@ -22,6 +22,7 @@ const bookSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    createdby: { type: mongoose.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -46,12 +46,18 @@ export const createBook = async (req, res) => {
       return res.status(400).json({ message: "Book Already Exists" });
     }
 
+    const user = req.cookies.user;
+    console.log("new user is", user);
+    const { _id } = user;
+    console.log("id", _id);
+
     const newBook = new Book({
       title,
       author,
       publisher,
       stock,
       published,
+      createdby: _id,
     });
 
     await newBook.save();
@@ -89,7 +95,6 @@ export const deleteBook = async (req, res) => {
     const result = deleteBookSchema.validate(body, { abortEarly: false });
     const { value, error } = result;
 
-
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
     }
@@ -107,7 +112,6 @@ export const deleteBook = async (req, res) => {
 export const updateBook = async (req, res) => {
   try {
     const { bookid } = req.params;
-    console.log("bookId", bookid);
     const { body } = req;
     const result = createBookSchema.validate(body, { abortEarly: false });
     const { value, error } = result;
@@ -121,7 +125,7 @@ export const updateBook = async (req, res) => {
       author: author,
       publisher: publisher,
       stock: stock,
-      date:date
+      date: date,
     };
     const bookUpdated = await Book.findByIdAndUpdate(bookid, updatedbookvalue, {
       new: true,
@@ -133,6 +137,20 @@ export const updateBook = async (req, res) => {
     return res
       .status(200)
       .json({ message: "Book Updated Successfully", book: bookUpdated });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const findBookById = async (req, res) => {
+  try {
+    const { userid } = req.params;
+    const books = await Book.find({ createdby: userid });
+    if (books.length === 0) {
+      return res.status(400).json({ message: "No Book Find" });
+    }
+
+    return res.status(200).json({ books: books });
   } catch (error) {
     return res.status(500).json({ message: "Internal Server Error" });
   }

@@ -100,7 +100,7 @@ export const userLogin = async (req, res) => {
       return res.status(400).json({ message: "Credentials not correct" });
     }
 
-    let decryptpass = await bcrypt.compare(password, findUser.password);
+    let decryptpass = await bcrypt.compare(password, user.password);
 
     if (!decryptpass) {
       return res.status(400).json({ message: "Credentials not correct" });
@@ -119,6 +119,7 @@ export const userLogin = async (req, res) => {
       { expiresIn: "12h" }
     );
 
+    res.cookie("user", createduser);
     return res
       .status(200)
       .json({ message: "Login in SuccessFully", token, createduser });
